@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Battle! สัตว์มีกระดูกสันหลัง vs ไม่มีสันหลัง — Kru Pai Classroom (สุ่ม 50 ข้อ)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ธีม เขียว–น้ำตาล */
+    --bg:#f6fff6;           /* เขียวอ่อนพื้นหลัง */
+    --fg:#1f2a1f;           /* เขียวเข้มอ่านง่าย */
+    --brand:#2eae5e;        /* เขียวสด (ชื่อโจทย์) */
+    --accent:#7b4f2b;       /* น้ำตาล (ปุ่มตัวเลือก) */
+    --accent-2:#b87333;     /* น้ำตาลส้มไฮไลต์ */
+    --card:#ffffff;
+    --muted:#8aa38a;
+    --warn:#d12b2b;         /* แดงนิดๆ สำหรับผิด */
+    --good:#0f9a3a;         /* เขียวสำหรับถูก */
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:linear-gradient(180deg,#eaffe5 0%, var(--bg) 50%, #ffffff 100%);
+    font-family:"Noto Sans Thai", system-ui, sans-serif; color:var(--fg);
+    display:flex; min-height:100vh; align-items:center; justify-content:center;
+  }
+  .container{ width:min(1000px, 96vw); padding:20px; }
+  .card{ background:var(--card); border-radius:22px; padding:22px; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+  .grid{ display:grid; gap:16px; }
+  .center{ text-align:center; }
+  .hidden{ display:none !important; }
+
+  /* โลโก้/แบรนด์บนสุดทุกหน้า */
+  .miniBrand{ display:flex; align-items:center; gap:10px; justify-content:center; font-weight:800; color:#234; margin:-6px 0 10px; }
+  .miniBrand .dot{ width:10px; height:10px; background:linear-gradient(135deg,#f8cf82,#c4873b); border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+
+  /* ปุ่ม */
+  .btn{ border:0; cursor:pointer; padding:14px 18px; border-radius:999px; font-weight:800; font-size:18px; letter-spacing:.2px; transition:.2s transform, .2s box-shadow, .2s filter; }
+  .btn:active{ transform:translateY(1px); }
+  .btn-lg{ padding:18px 28px; font-size:22px; }
+  .btn-primary{ background:linear-gradient(135deg, var(--accent-2), var(--accent)); color:white; box-shadow:0 8px 18px rgba(123,79,43,.35); }
+  .btn-outline{ background:transparent; color:var(--fg); border:2px dashed var(--muted); }
+
+  /* เกม */
+  .question{ font-size: clamp(28px, 6vw, 52px); font-weight:800; color:var(--brand); margin:12px 0 8px; }
+  .timer{ display:flex; align-items:center; gap:10px; justify-content:center; font-weight:800; }
+  .bar{ width:100%; height:12px; background:#ffe9db; border-radius:999px; overflow:hidden; }
+  .bar > div{ height:100%; width:100%; background:linear-gradient(90deg, #ffd7b1, #ffc38a); transition:width .2s linear; }
+  .choices{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:10px; }
+  @media(min-width:560px){ .choices{ grid-template-columns:1fr 1fr; } }
+  .choice{ background:linear-gradient(135deg, var(--accent-2), var(--accent)); color:#fff; border:none; border-radius:18px; padding:16px; font-size:20px; font-weight:800; cursor:pointer; box-shadow:0 10px 20px rgba(123,79,43,.25); }
+  .choice:hover{ filter:brightness(1.06); }
+  .status{ min-height:56px; font-weight:800; text-align:center; margin-top:10px; font-size: clamp(22px, 5vw, 32px); }
+  .status-bubble{ display:inline-block; padding:10px 16px; border-radius:999px; background:#fff; border:3px solid #ffe1e1; box-shadow:0 8px 16px rgba(0,0,0,.08); }
+  .good{ color:var(--good); text-shadow:0 2px 0 rgba(255,255,255,.6); }
+  .bad{ color:var(--warn); text-shadow:0 2px 0 rgba(255,255,255,.6); }
+
+  /* หน้าทบทวนตัวอย่าง */
+  .two-col{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media(min-width:720px){ .two-col{ grid-template-columns:1fr 1fr; } }
+  .list-card{ background:#fff; border:2px solid #eadccf; border-radius:18px; padding:14px 16px; }
+  .list-card h3{ margin:6px 0 8px; font-weight:800; color:#6b4b2b; }
+  .animal-list{ display:flex; flex-wrap:wrap; gap:10px; }
+  .an{ background:#f7fff5; border:1px solid #d8edd7; padding:8px 12px; border-radius:16px; font-weight:700; }
+
+  /* หน้าสรุปคะแนน */
+  .score-big{ font-size: clamp(36px, 8vw, 72px); font-weight:800; margin:6px 0 12px; }
+</style>
+</head>
+<body>
+  <div class="container grid">
+
+    <!-- หน้า 1: หน้าปก + วิธีเล่น + ปุ่มดูตัวอย่าง -->
+    <section id="screen-home" class="card">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h1 class="center">Battle! สัตว์มีกระดูกสันหลัง vs ไม่มีสันหลัง</h1>
+      <div class="center" style="margin:8px 0 14px;">
+        <span style="display:inline-block;background:#f7e6c4;padding:6px 14px;border-radius:999px;font-weight:800">สุ่ม 50 ข้อ · จับเวลา 7 วินาที/ข้อ · ป.3–ป.4</span>
+      </div>
+      <div class="grid">
+        <div class="card" style="background:#fbfff5">
+          <h2>วิธีเล่น (อ่านก่อนเริ่ม)</h2>
+          <p style="font-size:18px;line-height:1.7"><strong>จงบอกว่าสัตว์ต่อไปนี้</strong> เป็น <strong>สัตว์มีกระดูกสันหลัง</strong> หรือ <strong>สัตว์ไม่มีสันหลัง</strong> — 
+            <mark style="background:#ffe9b8;padding:0 6px;border-radius:6px;">จับเวลา 7 วินาทีต่อข้อ</mark> 
+            หากพร้อมแล้ว <strong>กดปุ่ม Start</strong> เพื่อเริ่มเล่นได้เลย!
+          </p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center" aria-hidden="true">
+            <span class="an">ชื่อสัตว์ = สีเขียว</span>
+            <span class="an">ตัวเลือก = สีน้ำตาล</span>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr;gap:12px">
+          <input id="playerName" class="card" placeholder="พิมพ์ชื่อเล่นของหนู…" style="padding:14px 16px;border:2px dashed #cde8d1;border-radius:16px;font-size:18px" />
+          <div class="center" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+            <button id="btnStart" class="btn btn-lg btn-primary" style="font-size:24px;padding:18px 34px;box-shadow:0 12px 26px rgba(123,79,43,.35)">🚀 START เริ่ม Battle 50 ข้อ!</button>
+            <button id="btnExamplesA" class="btn btn-lg btn-outline">📚 ตัวอย่างสัตว์ (มีกระดูกสันหลัง)</button>
+            <button id="btnExamplesB" class="btn btn-lg btn-outline">🪲 ตัวอย่างสัตว์ (ไม่มีสันหลัง)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- หน้า 2: ตัวอย่างสัตว์มีกระดูกสันหลัง (50) -->
+    <section id="screen-exA" class="card hidden">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h2 class="center">🐾 ตัวอย่าง: สัตว์มีกระดูกสันหลัง (50 ชนิด)</h2>
+      <div class="two-col">
+        <div class="list-card">
+          <h3>กลุ่มสัตว์เลี้ยงลูกด้วยนม/นก</h3>
+          <div id="verteList1" class="animal-list"></div>
+        </div>
+        <div class="list-card">
+          <h3>กลุ่มปลา/ครึ่งบกครึ่งน้ำ/สัตว์เลื้อยคลาน</h3>
+          <div id="verteList2" class="animal-list"></div>
+        </div>
+      </div>
+      <div class="center" style="margin-top:14px">
+        <button id="toExB" class="btn">➡ ไปดูสัตว์ไม่มีสันหลัง</button>
+        <button id="startFromExA" class="btn btn-primary">🚀 เริ่ม Battle 50 ข้อ</button>
+        <button id="backA" class="btn">🏠 กลับหน้าแรก</button>
+      </div>
+    </section>
+
+    <!-- หน้า 3: ตัวอย่างสัตว์ไม่มีสันหลัง (50) -->
+    <section id="screen-exB" class="card hidden">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h2 class="center">🦋 ตัวอย่าง: สัตว์ไม่มีสันหลัง (50 ชนิด)</h2>
+      <div class="two-col">
+        <div class="list-card">
+          <h3>แมลง/แมลงใกล้เคียง</h3>
+          <div id="inverteList1" class="animal-list"></div>
+        </div>
+        <div class="list-card">
+          <h3>สัตว์น้ำ/ทะเลไม่มีกระดูกสันหลัง</h3>
+          <div id="inverteList2" class="animal-list"></div>
+        </div>
+      </div>
+      <div class="center" style="margin-top:14px">
+        <button id="toExA" class="btn">⬅ ย้อนกลับไปดูสัตว์มีกระดูกสันหลัง</button>
+        <button id="startFromExB" class="btn btn-primary">🚀 เริ่ม Battle 50 ข้อ</button>
+        <button id="backB" class="btn">🏠 กลับหน้าแรก</button>
+      </div>
+    </section>
+
+    <!-- หน้า 4: เกม 50 ข้อ -->
+    <section id="screen-game" class="card hidden">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <div class="grid">
+        <div class="timer">
+          <div class="bar" aria-label="ตัวจับเวลา"><div id="barFill"></div></div>
+          <div><strong id="timeText">7</strong>s</div>
+        </div>
+        <div class="center">
+          <div id="qCount" style="font-weight:800;color:#6b8f6b">ข้อ 1/50</div>
+          <div id="question" class="question">—</div>
+        </div>
+        <div class="choices">
+          <button class="choice" data-pick="verte">🐾 มีกระดูกสันหลัง</button>
+          <button class="choice" data-pick="inverte">🦋 ไม่มีสันหลัง</button>
+        </div>
+        <div id="status" class="status status-bubble"></div>
+      </div>
+    </section>
+
+    <!-- หน้า 5: สรุปคะแนน -->
+    <section id="screen-result" class="card hidden center">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h2>สรุปคะแนนของ <span id="playerLabel">นักเรียน</span></h2>
+      <div id="finalScore" class="score-big">0 / 50</div>
+      <p id="finalMsg" style="font-size:18px;margin-top:10px">—</p>
+      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button id="btnPlayAgain" class="btn btn-primary">🔁 เล่นอีกครั้ง</button>
+        <button id="btnHome" class="btn">🏠 กลับหน้าแรก (ลงชื่อเล่น)</button>
+      </div>
+    </section>
+
+  </div>
+
+<script>
+// ======================= ข้อมูลสัตว์ (50 + 50 ชนิด) =======================
+const VERTE = [
+  // เลี้ยงลูกด้วยนม/นก (25)
+  "คน","แมว","สุนัข","วัว","ควาย","ม้า","หมู","แกะ","แพะ","กวาง",
+  "ช้าง","ลิง","เสือ","สิงโต","หมี","หนู","กระรอก","กระต่าย","ค้างคาว","นกกระจอก",
+  "นกพิราบ","นกแก้ว","ไก่","เป็ด","ห่าน",
+  // ปลา/ครึ่งบกครึ่งน้ำ/เลื้อยคลาน + ทะเล (25)
+  "ปลา","ฉลาม","ปลากระเบน","ปลากะพง","ปลาทอง","ปลานิล","กบ","คางคก","เขียด","จระเข้",
+  "เต่า","งู","ปลาไหล","นกอินทรี","เหยี่ยว","เพนกวิน","ปลาโลมา","วาฬ","แมวน้ำ","แพนด้า",
+  "เสือดาว","ม้าน้ำ","กิ้งก่า","ปลาการ์ตูน","กวางดาว"
+];
+
+const INVERTE = [
+  // แมลง/ญาติแมลง (25)
+  "แมงมุม","มด","ผีเสื้อ","แมลงวัน","ยุง","แมลงปอ","ด้วง","ตัวไหม","ปลวก","จิ้งหรีด",
+  "ตั๊กแตน","เพลี้ย","เพลี้ยไฟ","มวน","ผึ้ง","ต่อ","แมลงสาบ","ด้วงกว่าง","เห็บ","หมัด",
+  "เหา","ตัวเรือด","หนอนผีเสื้อ","หนอนแดง","กิ้งกือ",
+  // น้ำ/ทะเลไม่มีกระดูกสันหลัง (25)
+  "ตะขาบ","ทาก","หอย","หอยทาก","หอยเชอรี่","หอยแครง","ปู","กุ้ง","ปูม้า","ปูทะเล",
+  "ปลาหมึก","หมึกกล้วย","หมึกกระดอง","ปลาหมึกยักษ์","แมงกะพรุน","ปะการัง","ฟองน้ำทะเล","ดอกไม้ทะเล","ดาวทะเล","ปลิงทะเล",
+  "แมงดาทะเล","ปลิง","ไส้เดือน","หอยแมลงภู่","ครัสเตเชียนเล็กๆ"
+];
+
+// รวมชุดและแท็กคำตอบ
+const ALL = [
+  ...VERTE.map(n=>({name:n, ans:'verte'})),
+  ...INVERTE.map(n=>({name:n, ans:'inverte'}))
+];
+
+// สุ่ม 50 ข้อจาก 100 ตัวอย่าง
+function pick50(){
+  const a=[...ALL];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a.slice(0,50);
+}
+
+// ===== DOM =====
+const screens={home:gid('screen-home'), exA:gid('screen-exA'), exB:gid('screen-exB'), game:gid('screen-game'), result:gid('screen-result')};
+const verteList1=gid('verteList1'), verteList2=gid('verteList2');
+const inverteList1=gid('inverteList1'), inverteList2=gid('inverteList2');
+const btnStart=gid('btnStart');
+const btnExamplesA=gid('btnExamplesA'), btnExamplesB=gid('btnExamplesB');
+const toExB=gid('toExB'), toExA=gid('toExA');
+const startFromExA=gid('startFromExA'), startFromExB=gid('startFromExB');
+const backA=gid('backA'), backB=gid('backB');
+const playerNameInput=gid('playerName');
+const qCount=gid('qCount'), question=gid('question'), statusBox=gid('status');
+const timeText=gid('timeText'), barFill=gid('barFill');
+const choiceButtons=[...document.querySelectorAll('.choice')];
+const playerLabel=gid('playerLabel'), finalScore=gid('finalScore'), finalMsg=gid('finalMsg');
+const btnPlayAgain=gid('btnPlayAgain'), btnHome=gid('btnHome');
+
+function gid(id){ return document.getElementById(id); }
+
+// เรนเดอร์รายการตัวอย่าง 50+50 แบ่งเป็นสองคอลัมน์
+function renderExamples(){
+  const v1 = VERTE.slice(0,25).map(x=>`<span class="an">${x}</span>`).join('');
+  const v2 = VERTE.slice(25).map(x=>`<span class="an">${x}</span>`).join('');
+  verteList1.innerHTML = v1; verteList2.innerHTML = v2;
+
+  const i1 = INVERTE.slice(0,25).map(x=>`<span class="an">${x}</span>`).join('');
+  const i2 = INVERTE.slice(25).map(x=>`<span class="an">${x}</span>`).join('');
+  inverteList1.innerHTML = i1; inverteList2.innerHTML = i2;
+}
+renderExamples();
+
+// สลับหน้า
+function show(which){ Object.values(screens).forEach(s=>s.classList.add('hidden')); screens[which].classList.remove('hidden'); }
+btnStart.addEventListener('click',()=>startGame());
+btnExamplesA.addEventListener('click',()=>show('exA'));
+btnExamplesB.addEventListener('click',()=>show('exB'));
+backA.addEventListener('click',()=>show('home'));
+backB.addEventListener('click',()=>show('home'));
+startFromExA.addEventListener('click',()=>startGame());
+startFromExB.addEventListener('click',()=>startGame());
+toExB.addEventListener('click',()=>show('exB'));
+toExA.addEventListener('click',()=>show('exA'));
+
+// เกมหลัก
+let deck=[], index=0, score=0, timer=null; const LIMIT=7; // วินาที/ข้อ
+function startGame(){ deck=pick50(); index=0; score=0; statusBox.textContent=''; show('game'); nextQuestion(); }
+
+function nextQuestion(){
+  if(index>=deck.length) return endGame();
+  const item=deck[index];
+  qCount.textContent = `ข้อ ${index+1}/50`;
+  question.textContent = item.name;
+  statusBox.textContent=''; statusBox.className='status status-bubble';
+  choiceButtons.forEach(b=>{ b.disabled=false; b.style.opacity=1; });
+  startTimer(LIMIT, ()=>{ flash(false); setTimeout(()=>{ index++; nextQuestion(); }, 500); });
+}
+
+function startTimer(seconds,onTimeout){
+  clearInterval(timer);
+  let remain=seconds; const total=seconds;
+  timeText.textContent=remain; barFill.style.width='100%';
+  timer=setInterval(()=>{
+    remain -= 0.1;
+    if(remain<=0){ clearInterval(timer); timeText.textContent=0; barFill.style.width='0%'; onTimeout && onTimeout(); }
+    else { timeText.textContent=Math.ceil(remain); barFill.style.width = `${(remain/total)*100}%`; }
+  },100);
+}
+
+choiceButtons.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    if(index>=deck.length) return;
+    const pick=btn.getAttribute('data-pick');
+    choiceButtons.forEach(b=>{ b.disabled=true; b.style.opacity=.7; });
+    clearInterval(timer);
+    const ok = (pick===deck[index].ans); if(ok) score++;
+    flash(ok);
+    setTimeout(()=>{ index++; nextQuestion(); }, 500);
+  })
+});
+
+function flash(ok){
+  statusBox.textContent = ok ? 'ถูกต้องจ้า! เก่งมาก 🌟' : 'พลาดนิดเดียว ลองข้อถัดไปนะ 🐾';
+  statusBox.className = 'status status-bubble ' + (ok ? 'good' : 'bad');
+}
+
+function endGame(){
+  show('result');
+  const name=(playerNameInput.value||'นักเรียน').trim();
+  playerLabel.textContent=name;
+  finalScore.textContent=`${score} / 50`;
+  finalMsg.textContent = score>=35 ? 'สุดยอด! ได้ 35 ข้อขึ้นไป ถือว่าผ่านการ Battle สัตว์แล้ว 🎉' : 'สู้ๆ นะ ลองใหม่อีกครั้งให้ได้ 35 ข้อขึ้นไป ✨';
+}
+
+btnPlayAgain.addEventListener('click',()=>startGame());
+btnHome.addEventListener('click',()=>show('home'));
+</script>
+</body>
+</html>
